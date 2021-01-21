@@ -6,3 +6,4 @@ for line in lines:
     string1 += line.strip()
 
 print(string1.strip())
+print('this is tset 1')
