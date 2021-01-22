@@ -1,0 +1,16 @@
+
+feature nxapi
+feature bash-shell
+feature sftp-server
+nv overlay evpn
+feature ospf
+feature bgp
+feature pim
+feature netconf
+feature restconf
+feature grpc
+feature interface-vlan
+feature vn-segment-vlan-based
+feature hsrp
+feature lacp
+feature nv overlay
