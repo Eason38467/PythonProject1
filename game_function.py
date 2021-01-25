@@ -30,20 +30,48 @@ def check_keyup_events(event, ship):
     elif event.key == pygame.K_LEFT:
         ship.moving_left = False
 
-def check_events(ai_settings,screen,ship,bullets):
+def check_events(ai_settings,screen,stats,play_button,ship,aliens,bullets):
     """响应按键和鼠标事件"""
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             sys.exit()
 
-            #飞船响应左右箭头事件，向左右移动
+        elif event.type == pygame.MOUSEBUTTONDOWN:
+            mouse_x,mouse_y = pygame.mouse.get_pos()
+            check_play_button(ai_settings,screen,stats,play_button,ship,aliens,bullets,mouse_x,mouse_y)
+
+        #飞船响应左右箭头事件，向左右移动
         elif event.type == pygame.KEYDOWN:
             check_keydown_events(event,ai_settings,screen ,ship,bullets)
 
         elif event.type == pygame.KEYUP:
             check_keyup_events(event,ship)
 
-def update_screen(ai_settings, screen,ship,aliens,bullets):
+def check_play_button(ai_settings,screen,stats,play_button,ship,aliens,bullets,mouse_x,mouse_y):
+    """在玩家单机play的时候开始游戏"""
+
+    button_clicked = play_button.rect.collidepoint(mouse_x,mouse_y)
+    if button_clicked and not stats.game_active:
+
+        # 隐藏光标
+        pygame.mouse.set_visible(False)
+        
+        # 重置游戏统计信息
+        stats.reset_stats()
+        stats.game_active = True
+
+        # 清空外星人和游戏列表， 子弹列表
+        aliens.empty()
+        bullets.empty()
+
+        # 创建外星人，并重置飞船
+
+        create_fleet(ai_settings, screen,ship,aliens)
+        ship.center_ship()
+
+        
+
+def update_screen(ai_settings, screen,stats,sb,ship,aliens,bullets,play_button):
         # 每次循环时都会重绘屏幕
         screen.fill(ai_settings.bg_color)
 
@@ -53,6 +81,11 @@ def update_screen(ai_settings, screen,ship,aliens,bullets):
 
         ship.blitme()
         aliens.draw(screen)
+        # 显示得分
+        sb.show_score()
+        if not stats.game_active:
+            play_button.draw_button()
+        
         # 让最近绘制的屏幕可见
         pygame.display.flip()
 
@@ -75,6 +108,7 @@ def check_bullet_alien_collisions(ai_settings,screen,ship,aliens,bullets):
     if len(aliens) == 0:
         #删除现有现有子弹和新建外星人
         bullets.empty()
+        ai_settings.increase_speed()
         create_fleet(ai_settings, screen,ship,aliens)
 
 

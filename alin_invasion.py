@@ -1,10 +1,12 @@
 
 
-import sys
+
 import pygame
 from setting import Setting
 from game_stats import GameStats
+from scoreboard import Scoreboard
 from ship import Ship
+from button import Button
 #from alien import Alien  不需要在这里创建外星人， 与子弹创建类似
 import game_function as gf
 from pygame.sprite import Group
@@ -18,8 +20,11 @@ def run_game():
     screen = pygame.display.set_mode((ai_settings.screen_width,ai_settings.screen_height))
     # 游戏窗口标题
     pygame.display.set_caption("Alien Invasion")
+    # 创建按钮
+    play_button = Button(ai_settings,screen,"Play")
     #创建一个存储游戏统计的实例
     stats = GameStats(ai_settings)
+    sb = Scoreboard(ai_settings,screen,stats)
     #创建一个飞船
     ship = Ship(ai_settings,screen)
     #创建一个子弹的组
@@ -35,13 +40,14 @@ def run_game():
     # 开始游戏的主循环
     while True:
         # 监视键盘和鼠标事件
-        gf.check_events(ai_settings,screen ,ship,bullets)
+        gf.check_events(ai_settings,screen,stats,play_button,ship,aliens,bullets)
         if stats.game_active:
             ship.update()
             gf.update_bullets(ai_settings,screen,ship,aliens,bullets)
             gf.update_aliens(ai_settings,stats,screen,ship,aliens,bullets)
         #下面的这个print用来在终端接口看子弹数量，可以删除
-        print(len(bullets))
-        gf.update_screen(ai_settings,screen,ship,aliens,bullets)
+        #print(len(bullets))
+        
+        gf.update_screen(ai_settings,screen,stats,sb,ship,aliens,bullets,play_button)
 
 run_game()
